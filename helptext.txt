@@ -1,0 +1,16 @@
+Hello. This is LokkenBot
+
+Commands:
+
+**help** - shows this message
+**ping** - tells you the ping
+**pi** - when followed by an integer, sends that many digits of pi
+**prefix** - changes the prefix (server owner only)
+**quote** - takes a random message in the channel from the specified user and quotes it 
+**password** - randomly generates a password with the specified length (1-30 characters) (security amirite)
+**delete** - deletes all messages from LarsBot in the channel
+**suggest** - sends a DM to the creator of the bot with a suggestion
+**info** - tells you about the bot
+**mathsmeme** - sends a meme about maths to the channel
+**test** - sends you a DM with an invite to the lokkenbot test server
+**encode** - encodes or decodes a message using a strange algorithm (encode help for syntax)
