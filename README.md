@@ -16,7 +16,7 @@ meme.jpg - where mathsmemes are saved after being requested
 
 pi - the digits of pi
 
-<h2>Special_info</h2>
+<h3>Special_info</h3>
   
   banned - a list of user IDs of users banned from the 'suggest' command
   
