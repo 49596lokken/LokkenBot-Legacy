@@ -1,0 +1,32 @@
+Hello, Welcome to the Dos game. Like UNO but twice as fun!
+
+As you can see, you have just been given 7 cards. The object of the game is to get rid of them
+
+In this game, you each take turns to play your cards until someone runs out. 
+
+After this message, you will see 2 cards placed by the bot. These are the piles. You are allowed to play on each pile once.
+
+You are allowed to play on each pile once per turn. 
+
+When you play, you are allowed to play either a single match or a double match. A single match is where you place a single card which has the same number as the one on the pile. A double match is where you play 2 cards whose numbers add up to the number on the pile you play them on. 
+
+If, in a single match, you also match the colour, you can paly an extra card from your hand and it will be a new pile after the turn. 
+
+In a double match, if **all** three cards have the same colour, this is a double colour match and you can play an extra card from your hand as a new pile after the turn and all other players have to pick up a card each
+
+If you are unable to make any matches, you have to pick up a card from the deck.
+
+At the end of the turn, all piles which were played on are discarded then if there are less than two piles, new piles are added. Then the cards from colour matches are added as new piles
+
+As you may be able to see, there are two types of special cards, a wild DOS card and wild # cards for each colour
+
+The wild dos card counts as a 2 which can be any colour.
+
+The wild # cards count as any number from 1-10 (no negatives or 0)
+
+How to play in discord.
+
+In order to view your hand, when it is your turn, type "dos hand" and the bot will send you a DM with your hand
+In order to see the piles you can play on, type "dos piles"
+In order to play type "dos" followed by the code(s) of the card(s) you want to play (the colour followed by the number or just dos if it is a 2) then the code of the pile you wish to play the card(s) on
+To go to the next turn type "dos next"
