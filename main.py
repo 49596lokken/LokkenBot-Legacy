@@ -4,10 +4,15 @@ prefixes = []
 guilds = []
 banned = []
 reddit_details = []
+doschannels = []
+doscards = []
+emojis = []
+emojinames=[]
+
+
 f = open("Special_info/reddit", "r")
 for i in f:
     reddit_details.append(i[:-1])
-    print("("+i[:-1]+")")
 f.close()
 
 f = open("Special_info/banned", "r")
@@ -20,6 +25,7 @@ for line in f:
     guilds.append(int(line[0:line.index("\u2839")]))
     prefixes.append(line[line.index("\u2839")+1:len(line)-1])
 f.close()
+
 
 @client.event
 async def on_ready():
@@ -40,7 +46,6 @@ async def on_ready():
     temp = [i.id for i in client.guilds]
     for i in guilds:
         if not i in temp:
-            print(i, temp)
             f = open("Special_info/prefixes", "r")
             output = ""
             for j in f:
@@ -54,12 +59,26 @@ async def on_ready():
             f.close()
             prefixes.remove(prefixes[guilds.index(i)])
             guilds.remove(i)
+    for emoji in client.get_guild(721340744207695903).emojis:
+        emojis.append(emoji)
+        emojinames.append(emoji.name)
+    for i in range(len(emojinames)):
+        if i < 16:
+            for j in range(3):
+                doscards.append(emojis[i])
+        elif i < 40:
+            for j in range(2):
+                doscards.append(emojis[i])
+        else:
+            for j in range(12):
+                doscards.append(emojis[i])
+
 
 @client.event
 async def on_guild_join(guild):
     guilds.append(guild.id)
     prefixes.append("^")
-    guild.me.edit(nick="(^) LokkenBot")
+    await guild.me.edit(nick="(^) LokkenBot")
     with open("Special_info/prefixes", "a") as file:
         file.write(str(guild.id)+"\u2839^\n")
         file.close()
@@ -102,6 +121,9 @@ async def on_message(message):
             if message.author == lars:
                 await lars.send("print\nban\nunban\nbanned\nsend\nexit")
 
+        elif message.content.lower().startswith("dos"):
+            return
+
         elif message.content.lower().startswith("ping"):
             await message.channel.send(str(int(str(datetime.datetime.utcnow()-message.created_at)[8:11]))+"ms")
 
@@ -110,7 +132,7 @@ async def on_message(message):
                 message.content = message.content[0:message.content.index(" ")]+message.content[message.content.index(" ")+1:]
             if message.content[2:].isdigit():
                 if int(message.content[2:len(message.content)]) <=1000 and  int(message.content[2:len(message.content)]) > 0:
-                    file = open("Special_info\pi", "r")
+                    file = open("pi", "r")
                     await message.channel.send("3."+file.read()[0:int(message.content[2:len(message.content)])])
                     file.close()
                 else:
@@ -141,7 +163,7 @@ async def on_message(message):
                     else:
                         await message.channel.send("You need to specify a prefix")
                 else:
-                    await message.channel.send("This command is only avaliable to the server owner")
+                    await message.channel.send("This command is only available to the server owner")
             else:
                 await message.channel.send("This command can only be used in a server. No prefix is required in DMs")
 
@@ -158,6 +180,7 @@ async def on_message(message):
                     await message.channel.send("QUOTE\n> {0.content}\n~ {0.author.display_name} {1}".format(random.choice(possible_messages),str(message.created_at)[:-7]))
             else:
                 await message.author.send("This command must be used in a server")
+
 
         elif message.content.lower().startswith("password"):
             message.content = message.content[8+int(message.content[8]==" "):]
@@ -300,6 +323,186 @@ async def on_message(message):
                         channel = int(message.content[:message.content.index(" ")])
                         await client.get_guild(guild).get_channel(channel).send(message.content[message.content.index(" "):])
 
+        elif message.content.lower().startswith("playdos"):
+            if message.author == lars or message.author.guild_permissions.administrator:
+                if "{0} {1}".format(message.guild.id, message.channel.id) in doschannels:
+                    await message.channel.send("Game already started")
+                    return()
+                doschannels.append("{0} {1}".format(message.guild.id, message.channel.id))
+                reactmsg = await message.channel.send("If you want to play Dos, react to the previous message with :back_of_hand:\nOnce everyone has reacted, type dos start to begin the game.")
+                await message.add_reaction("🤚")
+                def check(msg):
+                    if msg.content.lower()=="dos start" and msg.author == message.author and msg.channel==message.channel:
+                        return(True)
+                    return(False)
+                msg = await client.wait_for('message', check=check)
+                players = []
+                for i in message.reactions:
+                    if i.emoji=="🤚":
+                        players = await i.users().flatten()
+                players.remove(client.user)
+                for user in players:
+                    await user.send("You are now in a game of DOS!")
+                available_cards = [i for i in range(108)]
+                hands = []
+                for player in players:
+                    hands.append([])
+                    for i in range(7):
+                        card = random.choice(available_cards)
+                        available_cards.remove(card)
+                        hands[players.index(player)].append(doscards[card])
+                    output = ""
+                    for j in hands[players.index(player)]:
+                        output+= f"{j} "
+                    await player.send(output)
+                await message.channel.send("LET THE GAME BEGIN!\n")
+                await message.channel.send(open("dos/howto.txt", "r").read())
+                player = random.choice(players)
+                game = True
+                piles = []
+                for i in range(2):
+                    card = random.choice(available_cards)
+                    piles.append(doscards[card])
+                    available_cards.remove(card)
+                while game:
+                    await message.channel.send("{}, It's your turn now!".format(player.mention))
+                    playing = True
+                    played = False
+                    colour_matches = 0
+                    while playing:
+                        output = ""
+                        for i in piles:
+                            output += f"{i} "
+                        await message.channel.send(output)
+                        output = ""
+                        for card in hands[players.index(player)]:
+                            output += f"{card}"
+                        await player.send(output)
+                        def check(msg):
+                            return(msg.author==player)
+                        msg = await client.wait_for("message", check=check)
+                        if msg.author == player and msg.content.lower().startswith("dos "):
+                            msg.content = msg.content[4:]
+                            if msg.content.lower().startswith("hand"):
+                                output=""
+                                for j in hands[players.index(player)]:
+                                    output+= f"{j} "
+                                await player.send(output)
+                            elif msg.content.lower().startswith("play "):
+                                msg.content = msg.content[5:].upper()
+                                msg1 = msg.content[:]
+                                msg1 = msg1.split(" ")
+                                valid = True
+                                for i in range(len(msg1)):
+                                    if msg1[i][1]=="#":
+                                        msg1[i]=msg1[i][0]+"_"
+                                    if not msg1[i].upper() in emojinames:
+                                        valid = False
+                                if not valid:
+                                    await player.send("Invalid cards")
+                                elif len(msg1)==2: #They're playing one card
+                                    if emojis[emojinames.index(msg1[0])] in hands[players.index(player)]: #If player has the card
+                                        if emojis[emojinames.index(msg1[1])] in piles: #If the pile exists
+                                            if msg1[0][1:] == msg1[1][1:] or msg1[0][1]=="_" or msg1[1][1] == "_": #If the cards match number
+                                                if msg1[0][0] == msg1[1][0] or msg1[0] == "DOS" or msg1[1] == "DOS": #COLOUR MATCH
+                                                    colour_matches += 1
+                                                piles.remove(piles[piles.index(emojis[emojinames.index(msg1[1])])])
+                                                hands[players.index(player)].remove(emojis[emojinames.index(msg1[0])])
+                                                played = True
+                                            else:
+                                                await player.send("These cards don't match!")
+                                        else:
+                                            await player.send("That pile doesn't exist")
+                                    else:
+                                        await player.send("You don't have that card")
+                                elif len(msg1) == 3: #They're playing 2 cards.
+                                    if emojis[emojinames.index(msg1[0])] in hands[players.index(player)]: #If player has card 1
+                                        temphand = hands[players.index(player)][:]
+                                        temphand.remove(emojis[emojinames.index(msg1[0])])
+                                        if emojis[emojinames.index(msg1[1])] in temphand: #If player has card 2
+                                            if emojis[emojinames.index(msg1[2])] in piles: #If the pile exists
+                                                match = False
+                                                for i in range(2): #Loop makes the played dos cards into 2s of the same colour as the pile
+                                                    if msg1[i] == "DOS":
+                                                        if msg1[2] != "DOS":
+                                                            msg1[i] = msg1[2][0] + "2"
+                                                wilds = 0
+                                                for i in range(len(msg1)):
+                                                    if msg1[i][1] == "_":
+                                                        wilds += i+1
+                                                if wilds == 0: #Just numbers
+                                                    if int(msg1[0][1:]) + int(msg1[1][1:]) == int(msg1[2][1:]):
+                                                        match = True
+                                                elif wilds == 1 or wilds == 2: #play 1 wild on number
+                                                    if int(msg1[2][1:]) > int(msg1[2-wilds][1:]):
+                                                        match = True
+                                                elif wilds == 3:
+                                                    if msg1[2][1] == "_":
+                                                        if int(msg1[0][1]) + int(msg1[1][1]) < 11:
+                                                            match = True
+                                                    elif int(msg1[2][1:]) > 1:
+                                                        match = True
+                                                elif wilds == 4 or wilds == 5:
+                                                    if int(msg1[5-wilds][1:]) != 10:
+                                                        match = True
+                                                else:
+                                                    match = True
+                                                if match:
+                                                    played = True
+                                                    hands[players.index(player)] = temphand[:]
+                                                    hands[players.index(player)].remove(emojis[emojinames.index(msg1[1])])
+                                                    piles.remove(emojis[emojinames.index(msg1[2])])
+                                                    if msg1[0][0] == msg1[1][0] and  msg[0][0] == msg[2]: #DOUBLE COLOUR MATCH
+                                                        colour_matches += 1
+                                                        for user in players:
+                                                            if user != player:
+                                                                card = random.choice(available_cards)
+                                                                available_cards.remove(card)
+                                                                hands[players.index(user)].append(doscards[card])
+                                                                await user.send(doscards[card])
+                                else:
+                                    await player.send("You can only play 1 or 2 cards")
+                            elif msg.content.lower().startswith("piles"):
+                                output = ""
+                                for i in piles:
+                                    output += f"{i} "
+                                await message.channel.send(output)
+                            if msg.content.lower().startswith("next") or len(piles)==0 or len(hands[players.index(player)])==0:
+                                playing = False
+                                if len(hands[players.index(player)]) <= colour_matches:
+                                    await message.channel.send("{} has won the game!".format(player.mention))
+                                    game = False
+                                    break
+                                if played:
+                                    while len(piles) < 2:
+                                        card = random.choice(available_cards)
+                                        available_cards.remove(card)
+                                        piles.append(doscards[card])
+                                    for i in range(colour_matches):
+                                        output = ""
+                                        for i in hands[players.index(player)]:
+                                            output += f"{i}"
+                                        await message.channel.send("Please choose a card from your hand to be the new pile. Your hand is:")
+                                        await player.send(output)
+                                        def check(msg):
+                                            if msg.author==player:
+                                                if msg.content.upper() in emojinames:
+                                                    if emojis[emojinames.index(msg.content.upper())] in hands[players.index(player)]:
+                                                        return(True)
+                                            return(False)
+                                        newpile = await client.wait_for("message", check=check)
+                                        piles.append(emojis[emojinames.index(newpile.content.upper())])
+                                        hands[players.index(player)].remove(emojis[emojinames.index(newpile.content.upper())])
+                                else:
+                                    card = random.choice(available_cards)
+                                    available_cards.remove(card)
+                                    hands[players.index(player)].append(doscards[card])
+                                player = players[(players.index(player)+1)%len(players)]
+                                
+
+            else:
+                await message.channel.send("You need to be admin or lars to use this command")
+                
 
         elif message.content.lower().startswith("exit") and message.author == lars:
             sys.exit()
