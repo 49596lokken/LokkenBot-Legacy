@@ -25,3 +25,5 @@ pi - the digits of pi
   reddit - the reddit login and application info for the 'mathsmeme' command
   
   token - the bot's token
+<h3>dos<h3>
+  howto.txt - Text to be sent at the beginning of a game of dos in order to inform players how to play.
