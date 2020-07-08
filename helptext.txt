@@ -14,3 +14,4 @@ Commands:
 **mathsmeme** - sends a meme about maths to the channel
 **test** - sends you a DM with an invite to the lokkenbot test server
 **encode** - encodes or decodes a message using a strange algorithm (encode help for syntax)
+**playods** - starts a game of dos (admins only)
