@@ -364,20 +364,16 @@ async def on_message(message):
                     card = random.choice(available_cards)
                     piles.append(doscards[card])
                     available_cards.remove(card)
+                output = ""
+                for i in piles:
+                    output += f"{i}"
+                await message.channel.send(output)
                 while game:
                     await message.channel.send("{}, It's your turn now!".format(player.mention))
                     playing = True
                     played = False
                     colour_matches = 0
                     while playing:
-                        output = ""
-                        for i in piles:
-                            output += f"{i} "
-                        await message.channel.send(output)
-                        output = ""
-                        for card in hands[players.index(player)]:
-                            output += f"{card}"
-                        await player.send(output)
                         def check(msg):
                             return(msg.author==player)
                         msg = await client.wait_for("message", check=check)
@@ -472,6 +468,7 @@ async def on_message(message):
                                 if len(hands[players.index(player)]) <= colour_matches:
                                     await message.channel.send("{} has won the game!".format(player.mention))
                                     game = False
+                                    doschannels.remove(f"{mesage.channel.id} {message.guild.id}")
                                     break
                                 if played:
                                     while len(piles) < 2:
@@ -498,7 +495,10 @@ async def on_message(message):
                                     available_cards.remove(card)
                                     hands[players.index(player)].append(doscards[card])
                                 player = players[(players.index(player)+1)%len(players)]
-                                
+                                output = ""
+                                for i in piles:
+                                    output += f"{i}"
+                                await message.channel.send(output)
 
             else:
                 await message.channel.send("You need to be admin or lars to use this command")
