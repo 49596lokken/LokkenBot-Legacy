@@ -2,7 +2,7 @@
 
 The Source code of a badly coded Discord Bot
 
-[here](https://discord.com/api/oauth2/authorize?client_id=698859232329596988&permissions=67487808&scope=bot, "here")
+This bot won't be updated again so if you really want to have this bot (I'd strongly reccomend literally any other bot) just copy the source code and create your own instance.
 
 # Files Included:
 
